@@ -52,6 +52,7 @@ APPLICATION_APPS = [
                     'doctors.apps.DoctorsConfig',
                     'listings.apps.ListingsConfig',
                     'accounts.apps.AccountsConfig',
+                    'contacts.apps.ContactsConfig',
                     ]
 
 
