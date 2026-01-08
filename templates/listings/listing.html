@@ -1,6 +1,8 @@
    {% extends 'base.html' %}
    {% load static %}
    {% load humanize %}
+   <!--block title-->
+   {% block title %} | {{listing.title | title}} {% endblock %}
    {% block content %}
    
    
@@ -121,97 +123,138 @@
                 </ul>
               </div>
             </div>
+<!--professional-->
+<div class="row mb-t">
+<h4 class="mr-3 text-secondary">Professions</h4>
 
-            <!-- Description -->
-            <div class="row mb-5">
-              <div class="col-md-12">{{listing.description | linebreaks}}</div>
+{% if listing.professions.all %}
+<ul>
+  {% for profession in listing.professions.all %}
+  <li class ="mr-3 text-warning"><h5>{{profession.name | title}}</h5></li>
+  {% endfor %}
+</ul>  
+{% else%}
+  <p class="text-secondary">No professions listed</p>
+{% endif %}
 
-            </div>
-          </div>
-          <div class="col-md-3">
-            <div class="card mb-3">
-              <img
-                class="card-img-top"
-                src="{{listing.doctor.photo.url}}"
-                alt="Seller of the month"
-              />
-              <div class="card-body">
-                <h5 class="card-title">Medical Practitioner</h5>
-                <h6 class="text-secondary">{{listing.doctor.name}}</h6>
-              </div>
-            </div>
-            <button
-              class="btn-primary btn-block btn-lg"
-              data-toggle="modal"
-              data-target="#inquiryModal"
-            >
-              Make An Inquiry
-            </button>
-          </div>
+</div>
+
+<!--services-->
+<div class="row mb-5">
+  <h4 class="text-secondary">Services :</h4>
+  {% if listing.services.all %}
+  <!--services tag-->
+  <ul>
+    {% for service_tag in listing.services.all %}
+    <li class="mr-3 text-warning"><h5>{{service_tag.name | title}}</h5></li>
+  {% endfor %}
+  </ul>
+  
+  {% else %}
+  <h4>No services</h4>
+  {% endif %}
+</div>
+
+
+        <!-- Description -->
+        <div class="row mb-5">
+          <div class="col-md-12">{{listing.description | linebreaks}}</div>
+
         </div>
       </div>
-    </section>
-        <!-- Inquiry Modal -->
-    <div class="modal fade" id="inquiryModal" role="dialog">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="inquiryModalLabel">Make An Inquiry</h5>
-            <button type="button" class="close" data-dismiss="modal">
-              <span>&times;</span>
-            </button>
-          </div>
-          <div class="modal-body">
-            <form method="POST" action="{% url 'contacts:contact' %}">
-              {% csrf_token %}
-              <input type="hidden" name="listing_id" value="{{listing.id}}" />
-              {% if user.is_autenticated %}
-              <input type="hidden" name="user_id" value="{{user.id}}"/>
-              {% else %}
-              <input type="hidden" name="user_id" value="0" />
-              {% endif %}
-              <div class="form-group">
-                <label for="listing" class="col-form-label">Clinic:</label>
-                 
-                <input
-                  type="text"
-                  name="listing"
-                  class="form-control"
-                  {% if user.is_authenticated%}
-                  value="{{user.first_name}} {{user.last_name}}"
-                  
-                  readonly
-                  {% endif %}
-                />
-              </div>
-              <div class="form-group">
-                <label for="name" class="col-form-label">Name:</label>
-                <input type="text" name="name" class="form-control" 
-                {% if user.is_authenticated %} value="{{user.first_name}} {{user.last_name}}" readonly {% endif %} />
-              </div>
-              <div class="form-group">
-                <label for="email" class="col-form-label">Email:</label>
-                <input 
-                  type="email" name="email" class="form-control"
-                  {% if user.is_authenticated %} value="{{user.email}}" readonly {% endif %} />
-              </div>
-              <div class="form-group">
-                <label for="phone" class="col-form-label">Phone:</label>
-                <input type="text" name="phone" class="form-control" />
-              </div>
-              <div class="form-group">
-                <label for="message" class="col-form-label">Message:</label>
-                <textarea name="message" class="form-control"></textarea>
-              </div>
-              <hr />
-              <input
-                type="submit"
-                value="Send"
-                class="btn btn-block btn-secondary"
-              />
-            </form>
+
+      <!-- doctor photo -->
+      <div class="col-md-3">
+        <div class="card mb-3">
+          <img
+            class="card-img-top"
+            src="{{listing.doctor.photo.url}}"
+            alt="Seller of the month"
+          />
+          <div class="card-body">
+            <h5 class="card-title">Medical Practitioner</h5>
+            <h6 class="text-secondary">{{listing.doctor.name}}</h6>
           </div>
         </div>
+        <button
+          class="btn-primary btn-block btn-lg"
+          data-toggle="modal"
+          data-target="#inquiryModal"
+        >
+          Make An Inquiry
+        </button>
       </div>
     </div>
+  </div>
+</section>
+
+<!-- Inquiry Modal -->
+<div class="modal fade" id="inquiryModal" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="inquiryModalLabel">Make An Inquiry</h5>
+        <button type="button" class="close" data-dismiss="modal">
+          <span>&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form method="POST" action="{% url 'contacts:contact' %}">
+          {% csrf_token %}
+          <input type="hidden" name="listing_id" value="{{listing.id}}" />
+          <input type="hidden" name="doctor_email" value="{{listing.doctor.email}}"/>
+          {% if user.is_autenticated %}
+          <input type="hidden" name="user_id" value="{{user.id}}"/>
+          {% else %}
+          <input type="hidden" name="user_id" value="0" />
+          {% endif %}
+          <div class="form-group">
+            <label for="listing" class="col-form-label">Clinic:</label>
+            <input
+              type="text"
+              name="listing"
+              class="form-control"
+              value="{{listing.title | title}}"
+              readonly
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="name" class="col-form-label">Name:</label>
+            <!-- prettier-ignore -->
+            <input
+              type="text"
+              name="name"
+              class="form-control"
+              {% if user.is_authenticated %}
+              value="{{user.first_name}} {{user.last_name}}"
+              readonly
+              {% endif %}
+            />
+          </div>
+          <div class="form-group">
+            <label for="email" class="col-form-label">Email:</label>
+            <input 
+              type="email" name="email" class="form-control"
+              {% if user.is_authenticated %} value="{{user.email}}" readonly {% endif %} />
+          </div>
+          <div class="form-group">
+            <label for="phone" class="col-form-label">Phone:</label>
+            <input type="text" name="phone" class="form-control" />
+          </div>
+          <div class="form-group">
+            <label for="message" class="col-form-label">Message:</label>
+            <textarea name="message" class="form-control"></textarea>
+          </div>
+          <hr />
+          <input
+            type="submit"
+            value="Send"
+            class="btn btn-block btn-secondary"
+          />
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock %}
